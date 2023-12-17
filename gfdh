@@ -1,0 +1,370 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+// Definirea structurii pentru Tara
+struct STara {
+ char denumirea[100];
+ char Tara[50];
+ char regizorul[50];
+ int population;
+ int area;
+};
+// Declararea funcțiilor
+void alocareMemorie(struct STara **tablou, int *nrElemente);
+void introducereElemente(struct STara *tablou, int nrElemente);
+void cautareElement(struct STara *tablou, int nrElemente);
+void sortareTablou(struct STara *tablou, int nrElemente);
+void redactareElement(struct STara *tablou, int nrElemente);
+void adaugareElement(struct STara **tablou, int *nrElemente);
+void eliminareElement(struct STara **tablou, int *nrElemente);
+void inserareElement(struct STara **tablou, int *nrElemente);
+void salvareInFisier(struct STara *tablou, int nrElemente);
+void citireDinFisier(struct STara **tablou, int *nrElemente);
+void extragereLaEcran(struct STara *tablou, int nrElemente);
+void eliberareMemorie(struct STara **tablou);
+int main() {
+ struct STara *tablou = NULL;
+ int nrElemente = 0;
+ int optiune;
+ do {
+printf("\nМеню:\n");
+printf("1. Динамическое выделение памяти для массива структур.\n");
+printf("2. Ввод элементов массива с клавиатуры.\n");
+printf("3. Поиск элемента в массиве.\n");
+printf("4. Сортировка массива.\n");
+printf("5. Редактирование элемента массива.\n");
+printf("6. Добавление нового элемента в конец.\n");
+printf("7. Удаление указанного элемента из массива.\n");
+printf("8. Вставка нового элемента.\n");
+printf("9. Сохранение элементов массива в файл.\n");
+printf("10. Чтение элементов массива из файла.\n");
+printf("11. Вывод элементов массива на экран.\n");
+printf("12. Освобождение выделенной памяти для массива.\n");
+printf("0. Выход из программы.\n");
+printf("Выберите опцию: ");
+
+ scanf("%d", &optiune);
+ switch (optiune) {
+ case 1:
+ alocareMemorie(&tablou, &nrElemente);
+ break;
+ case 2:
+ introducereElemente(tablou, nrElemente);
+ break;
+ case 3:
+ cautareElement(tablou, nrElemente);
+ break;
+ case 4:
+ sortareTablou(tablou, nrElemente);
+ break;
+ case 5:
+ redactareElement(tablou, nrElemente);
+ break;
+ case 6:
+ adaugareElement(&tablou, &nrElemente);
+ break;
+ case 7:
+ eliminareElement(&tablou, &nrElemente);
+ break;
+ case 8:
+ inserareElement(&tablou, &nrElemente);
+ break;
+ case 9:
+ salvareInFisier(tablou, nrElemente);
+ break;
+ case 10:
+ citireDinFisier(&tablou, &nrElemente);
+ break;
+ case 11:
+ extragereLaEcran(tablou, nrElemente);
+ break;
+ case 12:
+ eliberareMemorie(&tablou);
+ break;
+ case 0:
+printf("Выход из программы.\n");
+break;
+default:
+printf("Неверная опция. Выберите еще раз.\n");
+}
+ } while (optiune != 0);
+ return 0;
+}
+// Implementarea functiilor...
+void alocareMemorie(struct STara **tablou, int *nrElemente) {
+ int dimensiune;
+printf("Введите размер массива: ");
+ scanf("%d", &dimensiune);
+ *tablou = (struct STara *)malloc(dimensiune * sizeof(struct STara));
+ if (*tablou == NULL) {
+printf("Выделение памяти не удалось. Выход из программы.\n");
+ exit(EXIT_FAILURE);
+ }
+ *nrElemente = dimensiune;
+printf("Выделение памяти успешно.\n");
+}
+void introducereElemente(struct STara *tablou, int nrElemente) {
+    for (int i = 0; i < nrElemente; ++i) {
+        printf("\nВведите информацию для страны %d:\n", i + 1);
+        printf("Название: ");
+        scanf("%s", tablou[i].denumirea);
+        printf("Страна: ");
+        scanf("%s", tablou[i].Tara);
+        printf("Мэр: ");
+        scanf("%s", tablou[i].regizorul);
+        printf("Население: ");
+        scanf("%d", &tablou[i].population);
+        printf("Площадь: ");
+        scanf("%d", &tablou[i].area);
+    }
+}
+void cautareElement(struct STara *tablou, int nrElemente) {
+    char denumireCautata[100];
+    int gasit = 0;
+    printf("Введите название для поиска: ");
+    scanf("%s", denumireCautata);
+    for (int i = 0; i < nrElemente; ++i) {
+        if (strcmp(tablou[i].denumirea, denumireCautata) == 0) {
+            printf("Страна найдена:\n");
+            printf("Страна: %s\n", tablou[i].Tara);
+            printf("Мэр: %s\n", tablou[i].regizorul);
+            printf("Население: %d\n", tablou[i].population);
+            printf("Площадь: %d\n", tablou[i].area);
+            gasit = 1;
+            break;
+        }
+    }
+    if (!gasit) {
+        printf("Страна с названием %s не была найдена.\n", denumireCautata);
+    }
+}
+void sortareTablou(struct STara *tablou, int nrElemente) {
+    // Используем сравнение числовых значений для population (население)
+    for (int i = 0; i < nrElemente - 1; ++i) {
+        for (int j = 0; j < nrElemente - i - 1; ++j) {
+            if (tablou[j].population > tablou[j + 1].population) {
+                // Schimbarea elementelor
+                struct STara temp = tablou[j];
+                tablou[j] = tablou[j + 1];
+                tablou[j + 1] = temp;
+            }
+        }
+    }
+    printf("Сортировка завершена.\n");
+}
+
+
+
+void redactareElement(struct STara *tablou, int nrElemente) {
+    char denumireModificata[100];
+    printf("Введите название страны для редактирования: ");
+    scanf("%s", denumireModificata);
+    
+    for (int i = 0; i < nrElemente; ++i) {
+        if (strcmp(tablou[i].denumirea, denumireModificata) == 0) {
+            printf("Введите новую информацию для страны %s:\n", denumireModificata);
+            printf("Название: ");
+            scanf("%s", tablou[i].denumirea);
+            printf("Страна: ");
+            scanf("%s", tablou[i].Tara);
+            printf("Мэр: ");
+            scanf("%s", tablou[i].regizorul);
+            printf("Население: ");
+            scanf("%d", &tablou[i].population);
+            printf("Площадь: ");
+            scanf("%d", &tablou[i].area);
+            printf("Редактирование завершено.\n");
+ clearBuffer();
+ return;
+ }
+ }
+printf("Страна с названием %s не была найдена.\n", denumireModificata);
+}
+
+void clearBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+void adaugareElement(struct STara **tablou, int *nrElemente) {
+    *tablou = (struct STara *)realloc(*tablou, (*nrElemente + 1) * sizeof(struct STara));
+
+    if (*tablou == NULL) {
+        printf("Выделение памяти не удалось. Выход из программы.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Введите информацию для новой страны:\n");
+    printf("Название: ");
+    scanf("%s", (*tablou)[*nrElemente].denumirea);
+    printf("Страна: ");
+    scanf("%s", (*tablou)[*nrElemente].Tara);
+    printf("Мэр: ");
+    scanf("%s", (*tablou)[*nrElemente].regizorul);
+    printf("Население: ");
+    scanf("%d", &(*tablou)[*nrElemente].population);
+    clearBuffer();  // Очистить буфер ввода
+    printf("Площадь: ");
+    scanf("%d", &(*tablou)[*nrElemente].area);
+
+    (*nrElemente)++;
+    printf("Добавление завершено.\n");
+}
+
+// Inside the adaugareElement function
+// Внутри функции adaugareElement
+printf("Введите информацию для новой страны:\n");
+printf("Название: ");
+scanf("%s", (*tablou)[*nrElemente].denumirea);
+printf("Страна: ");
+scanf("%s", (*tablou)[*nrElemente].Tara);
+printf("Мэр: ");
+scanf("%s", (*tablou)[*nrElemente].regizorul);
+printf("Население: ");
+scanf(" %d", &(*tablou)[*nrElemente].population);  // Обратите внимание на пробел перед %d
+printf("Площадь: ");
+scanf("%d", &(*tablou)[*nrElemente].area);
+
+
+
+    (*nrElemente)++;
+    printf("Добавление завершено.\n");
+}
+
+void eliminareElement(struct STara **tablou, int *nrElemente) {
+ char denumireEliminata[100];
+printf("Введите название страны для удаления: ");
+ scanf("%s", denumireEliminata);
+ int gasit = 0;
+ for (int i = 0; i < *nrElemente; ++i) {
+ if (strcmp((*tablou)[i].denumirea, denumireEliminata) == 0) {
+ // Shiftarea elementelor pentru a suprascrie elementul de eliminat
+ for (int j = i; j < *nrElemente - 1; ++j) {
+ (*tablou)[j] = (*tablou)[j + 1];
+ }
+*tablou = (struct STara *)realloc(*tablou, (*nrElemente - 1) * sizeof(struct STara));
+if (*tablou == NULL && *nrElemente > 1) {
+    printf("Ошибка выделения памяти. Выход из программы.\n");
+    exit(EXIT_FAILURE);
+}
+
+(*nrElemente)--;
+ gasit = 1;
+printf("Удаление завершено.\n");
+ break;
+ }
+ }
+ if (!gasit) {
+printf("Страна с названием %s не была найдена.\n", denumireEliminata);
+ }
+}
+void inserareElement(struct STara **tablou, int *nrElemente) {
+ int pozitie;
+printf("Введите позицию, куда вы хотите вставить новую страну (0 - %d): ",
+*nrElemente);
+ scanf("%d", &pozitie);
+ if (pozitie < 0 || pozitie > *nrElemente) {
+printf("Неверная позиция. Выход из программы.\n");
+ exit(EXIT_FAILURE);
+ }
+ *tablou = (struct STara *)realloc(*tablou, (*nrElemente + 1) * sizeof(struct
+STara));
+ if (*tablou == NULL) {
+printf("Выделение памяти не удалось. Выход из программы.\n");
+ exit(EXIT_FAILURE);
+ }
+ // Shiftarea elementelor pentru a face loc pentru noul element
+ for (int i = *nrElemente - 1; i >= pozitie; --i) {
+ (*tablou)[i + 1] = (*tablou)[i];
+ }
+printf("Введите информацию для новой страны:\n");
+printf("Название: ");
+scanf("%s", (*tablou)[pozitie].denumirea);
+printf("Страна: ");
+scanf("%s", (*tablou)[pozitie].Tara);
+printf("Мэр: ");
+scanf("%s", (*tablou)[pozitie].regizorul);
+printf("Население: ");
+scanf("%d", (*tablou)[pozitie].population);
+printf("Площадь: ");
+scanf("%d", &(*tablou)[pozitie].area);
+(*nrElemente)++;
+printf("Вставка завершена.\n");
+
+}
+void salvareInFisier(struct STara *tablou, int nrElemente) {
+    FILE *fisier = fopen("Tara.txt", "w");
+    if (fisier == NULL) {
+        printf("Ошибка при открытии файла для записи.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < nrElemente; ++i) {
+        fprintf(fisier, "%s %s %s %d %d\n", tablou[i].denumirea, tablou[i].Tara,
+                tablou[i].regizorul, tablou[i].population, tablou[i].area);
+    }
+
+    fclose(fisier);
+    printf("Сохранение в файл завершено.\n");
+}
+void citireDinFisier(struct STara **tablou, int *nrElemente) {
+    FILE *fisier = fopen("Tara.txt", "r");
+    if (fisier == NULL) {
+        printf("Ошибка при открытии файла для чтения.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int numarDeElemente = 0;
+    struct STara temp;
+
+    // Используем проверку успешности fscanf
+    while (fscanf(fisier, " %99s %49s %49s %d %d", temp.denumirea, temp.Tara,
+                  temp.regizorul, &temp.population, &temp.area) == 5) {
+        numarDeElemente++;
+    }
+
+    rewind(fisier);
+
+    *tablou = (struct STara *)realloc(*tablou, numarDeElemente * sizeof(struct STara));
+    if (*tablou == NULL) {
+        printf("Ошибка выделения памяти. Выход из программы.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < numarDeElemente; ++i) {
+        // Используем fgets для обработки пробелов в данных ввода
+        if (fscanf(fisier, " %99s %49s %49s %d %d",
+                   (*tablou)[i].denumirea, (*tablou)[i].Tara,
+                   (*tablou)[i].regizorul, &(*tablou)[i].population, &(*tablou)[i].area) != 5)
+                   clearBuffer();
+            printf("Ошибка при чтении из файла.\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    *nrElemente = numarDeElemente;
+    fclose(fisier);
+    printf("Чтение из файла завершено.\n");
+}
+
+
+void extragereLaEcran(struct STara *tablou, int nrElemente) {
+    printf("\nСписок стран:\n");
+    for (int i = 0; i < nrElemente; ++i) {
+        printf("Страна %d:\n", i + 1);
+        printf("Название: %s\n", tablou[i].denumirea);
+        printf("Страна: %s\n", tablou[i].Tara);
+        printf("Мэр: %s\n", tablou[i].regizorul);
+        printf("Население: %d\n", tablou[i].population);  
+        printf("Площадь: %d\n", tablou[i].area);          
+        printf("\n");
+    }
+}
+
+
+void eliberareMemorie(struct STara **tablou) {
+ free(*tablou);
+ *tablou = NULL;
+printf("Освобождение памяти завершено.\n");
+}
